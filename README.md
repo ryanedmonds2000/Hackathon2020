@@ -27,3 +27,8 @@ OurTracer.newDay() - progresses the calendar to the next day, tracking any relev
 
 
 print(OurTracer) prints the current day, the current number of users, and then for each user, prints their health status and how many interactions they have had with how many different people in 7 days.
+
+
+FUTURE IMPROVEMENTS:
+
+Current day and Time of day can be synced with a calendar, removing the neccesity of users reporting a time (while they still could if they wanted). newDay() should be called once a day if the code can run in real time

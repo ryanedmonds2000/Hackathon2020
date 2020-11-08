@@ -32,25 +32,35 @@ class ContactTracer:
         user "user", and will track all interactions made by said user within
         the given amount of time. For each other person found, update them to be
         Potentially Infected and recursively track their interactions
-
-        Potential issue: since we only operate one day at a time, some people
-        will be falsely tagged due to interactions happening at different times
-        of day
         """
-        pass
+        #first set all users the first user interacted with to have status potentially infected
+        #person[0] is the person, person[1] is the time
+        while days >= 0:
+            for person in user.interactions[(self.day - days) % 7]:
+                if person[0].status == "Healthy" and user.potentialInfectionTime <= person[1]:
+                    person[0].potentialInfectionDay = self.day - days
+                    person[0].potentialInfectionTime = person[1]
+                    person[0].status="Potentially Infected"
+                    self.traceInteractions(person[0],days)
+            days -= 1
 
     def newDay(self):
-        """
-        TODO:
-        increment self.day by 1
-
-        make space in each user's interactions list for a new day of interactions
-
-        for any users currently or potentially infected, trace their interactions for that day
-
-        for any potentially infected users who were last potentially infected
-        longer ago than self.lifespan, set to Healthy
-        """
+        """creates a new day; continue tracking people with positive test on day by day basis """
+        #TODO:
+        #increment self.day by 1
+        
+        #make space in each user's interactions list for a new day of interactions
+        for user in self.userList:
+            user.interactions[(self.day + 1) % 7] = []
+        #for any users currently or potentially infected, trace their interactions for that day
+            if user.status=="Infected" or user.status=="Potentially Infected":
+                if user.potentialInfectionDay != self.day:
+                    user.potentialInfectionTime = 0
+                    self.traceInteractions(user, 0)
+        #for any potentially infected users who were last potentially infected longer ago than self.lifespan, set to Healthy
+            if user.status == "Potentially Infected" and self.day - user.potentialInfectionDay > self.lifespan:
+                user.status="Healthy"
+        self.day+=1
         pass
 
 OurTracer = ContactTracer()
@@ -73,15 +83,16 @@ class User:
         self.status = 'Healthy'
         #For space purposes, only track interactions over the past week
         #Day of the week represented in modulo 7
-        self.interactions = [[]]*7
+        self.interactions = [[],[],[],[],[],[],[]]
         self.group = OurTracer
         #potentialInfectionDay exists so that potentiall infected users
         #can eventually be cleared
         self.potentialInfectionDay = 0
+        self.potentialInfectionTime = 0
         #infectionGeneration indicates how "far" the user is from an infected individual
         #the higher the number, the lower the chance of an infection
         self.infectionGeneration = 0
-        OurTracer.userList += [self]
+        self.group.userList += [self]
 
 
 
@@ -99,22 +110,34 @@ class User:
         uniquePeople = []
         for day in self.interactions:
             for person in day:
-                if person not in uniquePeople:
-                    uniquePeople += [person]
+                if person[0] not in uniquePeople:
+                    uniquePeople += [person[0]]
         return len(uniquePeople)
 
-    def interact(self, users):
+    def interact(self, users, time):
         """
         TODO:
         users should be a list of other Users
         for each member of users list, add them to self's interactions
         for the current day, and vice versa
+        time is when they interacted (military time)
         """
-        pass
+        for user in users:
+            self.interactions[self.group.day % 7] += [(user,time)]
+            user.interactions[self.group.day % 7] += [(self,time)]
 
     def reportSymptoms(self):
         """
-        TODO:
-        Update the user to being Infected, and trace their recent interactions
+        # Update the user to being Infected, and trace their recent interactions
         """
-        pass
+        self.status="Infected"
+        self.infectionGeneration = 1
+        self.potentialInfectionTime = 0
+        self.potentialInfectionDay = self.group.day - self.group.incubationPeriod
+        self.group.traceInteractions(self, self.group.incubationPeriod)
+
+    def reportHealthy(self):
+        """
+        Update the user to being healthy
+        """
+        self.status="Healthy"

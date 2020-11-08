@@ -32,3 +32,7 @@ print(OurTracer) prints the current day, the current number of users, and then f
 FUTURE IMPROVEMENTS:
 
 Current day and Time of day can be synced with a calendar, removing the neccesity of users reporting a time (while they still could if they wanted). newDay() should be called once a day if the code can run in real time
+
+LONG TERM GOAL:
+
+Convert to website functionality? Figuring out how to add user interface, as all interaction is currently through python terminal

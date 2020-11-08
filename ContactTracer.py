@@ -17,7 +17,7 @@ class ContactTracer:
         self.lifespan =  7        #If user goes this long without reporting systems, can go back to being healthy
 
     def __repr__(self):
-        output = 'Today is the day' + str(self.day) + ".\nThere are currently " + str(len(self.userList)) + " users:\n\n"
+        output = 'Today is day ' + str(self.day) + ".\nThere are currently " + str(len(self.userList)) + " users:\n\n"
         for user in self.userList:
             output += repr(user) + '\n\n'
         return output

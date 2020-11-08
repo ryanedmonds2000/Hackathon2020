@@ -1,4 +1,4 @@
-# Hackathon2020
+# 5C Hackathon2020 - Contact Tracer
 
 Ryan Edmonds
 
